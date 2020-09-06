@@ -1,0 +1,62 @@
+<?php
+if (isset($_POST['reouvrir-submit'])){
+    require 'dbh.inc.php';
+    $numero = $_POST['numero'];
+    $reponse= $_POST['reponse'];
+
+    //ne pas laisser les cases vides (je ne sais pas si cette partie va etre incluse dans le code de l appli)
+    if ( empty($numero) || empty($reponse)) {
+        header("Location: ../reouvrir.php?error=emptyfields&numero=".$numero."&reponse=".$reponse);
+        exit(); 
+    }
+    else{
+        $sql ="SELECT r_id FROM reclamation WHERE r_id=?";
+        $stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($stmt, $sql)){
+            header("Location: ../reouvrir.php?error=sqlerror");
+            exit(); 
+        }
+        else {
+            mysqli_stmt_bind_param($stmt, "s", $numero);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_store_result($stmt);
+            $resultCheck= mysqli_stmt_num_rows($stmt);
+            if ($resultCheck==0){
+                header("Location: ../reouvrir.php?error=AucuneReclamation&".$numero);
+                exit(); 
+            }
+            else{
+                $sql ="UPDATE reouverture SET reponse = ? , rep_date = ? WHERE r_id=? AND reponse=''";
+                $stmt = mysqli_stmt_init($conn);
+                if (!mysqli_stmt_prepare($stmt, $sql)){
+                    header("Location: ../reouvrir.php?error=sqlerror");
+                    exit(); 
+                }
+                else {
+                    $date =date("Y-m-d");
+                    mysqli_stmt_bind_param($stmt, "sss",$reponse, $date, $numero);
+                    mysqli_stmt_execute($stmt);
+                    $sql ="UPDATE reclamation SET r_status = ? WHERE r_id=?";
+                    $stmt = mysqli_stmt_init($conn);
+                    if (!mysqli_stmt_prepare($stmt, $sql)){
+                        header("Location: ../reouvrir.php?error=sqlerror");
+                        exit(); 
+                    }
+                    else {
+                        $statut="Fermée"; 
+                        mysqli_stmt_bind_param($stmt, "ss",$statut, $numero);
+                        mysqli_stmt_execute($stmt);
+                        header("Location: ../reouvrir.php?envoi=success");
+                        exit(); 
+                    }
+                }
+            }
+        }
+    }
+    mysqli_stmt_close($stmt);
+    mysqli_close($conn);
+}
+else{
+    header("Location: ../reouvrir.php");
+    exit();
+}
