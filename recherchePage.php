@@ -14,7 +14,7 @@
         if (isset($_SESSION['admin_uid'])){
             if (isset($_POST['recherche-submit'])){
                 $recherche = mysqli_real_escape_string($conn, $_POST['recherche']);
-                $sql= "SELECT * FROM reclamation WHERE r_id='$recherche' OR sujet LIKE '%$recherche%' OR description LIKE '%$recherche%'";
+                $sql= "SELECT * FROM reclamation WHERE r_id='$recherche' OR sujet LIKE '%$recherche%' OR description LIKE '%$recherche%' r_status LIKE '%$recherche%' OR r_date LIKE '%$recherche%' ";
     
                 $result= mysqli_query($conn, $sql);
                 $queryResult= mysqli_num_rows($result);
