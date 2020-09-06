@@ -31,12 +31,23 @@
 
                 if ($queryResult > 0) {
                     while($row = mysqli_fetch_assoc($result)){
-                        echo "<a href='reclamationDetails.php?numero=".$row['r_id']."'><div class='reclamation-boite'><h3 class='nombre'>".$row['r_id']."</h3></a>
+                        echo "<div class='reclamation-boite'>
+                        <a href='reclamationDetails.php?numero=".$row['r_id']."'><h3 class='nombre'>".$row['r_id']."</h3></a>
                         <h4>".$row['sujet']."</h4>
                         <p>".$row['description']."</p>
-                        <p>".$row['r_date']."</p>
-                        <p>".$row['r_status']."</p>
-                        </div>";
+                        <p>".$row['r_date']."</p>";
+
+                        if ($row['r_status']=="Ouverte"){  
+                            echo"<p ><e class='success'>".$row['r_status']."</e></p>";
+                        }
+                        else if ($row['r_status']=="Réouverte"){
+                            echo"<p><e class='success'>".$row['r_status']."</e></p>";     
+                        }
+                        else{
+                            echo "<p ><e class='erreur'>".$row['r_status']."</e></p>";
+                        }
+
+                        echo "</div>";
     
                     } 
                 } 
